@@ -1,0 +1,224 @@
+Jeg vil starte Fase 1 av et 3D-prosjekt. Opptre som en ekspert på Three.js og frontend-utvikling.
+
+Gjør følgende steg-for-steg:
+
+1.  **Oppsett:** Initialiser et nytt prosjekt med Vite og "Vanilla JavaScript" (ikke TypeScript foreløpig).
+2.  **Rydding:** Fjern all standard "boilerplate" kode (slett innholdet i style.css og main.js og fjern standard html-innholdet).
+3.  **Avhengigheter:** Legg til instruksjon for å installere 'three' biblioteket via npm.
+4.  **HTML/CSS:**
+    * Sett opp en enkel index.html med en <canvas> container eller la Three.js generere den.
+    * I style.css: Sørg for at body har margin: 0 og at canvaset fyller 100% av bredden og høyden på skjermen (overflow: hidden).
+5.  **JavaScript (main.js):**
+    * Importer Three.js.
+    * Sett opp en Scene, et PerspectiveCamera, og en WebGLRenderer.
+    * Lag en enkel kube (BoxGeometry) med et grønt materiale (MeshBasicMaterial).
+    * Legg til en animasjons-loop (requestAnimationFrame) som får kuben til å rotere sakte rundt X- og Y-aksen.
+    * Legg til en "event listener" som oppdaterer kameraet og rendereren hvis jeg endrer størrelse på nettleservinduet (resize handling).
+
+Vennligst opprett/overskriv filene for meg og forklar kort hvordan jeg starter serveren i terminalen etterpå.
+
+
+Nå som Fase 1 fungerer, skal vi gå videre til Fase 2. Jeg vil legge til funksjonalitet for å importere filer.
+
+Gjør følgende endringer i prosjektet:
+
+1.  **HTML (index.html):** Legg til et <input>-element av typen "file". Knappen skal ha teksten "Last opp punktsky". Bruk CSS for å plassere knappen øverst i venstre hjørne, slik at den ligger over 3D-visningen.
+2.  **CSS (style.css):** Gjør knappen og input-feltet litt penere. Gi dem en semitransparent bakgrunn og sørg for at de er lett synlige mot den svarte bakgrunnen.
+3.  **JavaScript (main.js):**
+    * Opprett en funksjon som lytter etter endringer i fil-inputen.
+    * Når en bruker velger en fil, skal appen lese innholdet som tekst ved hjelp av `FileReader`.
+    * For øyeblikket vil jeg bare at du skal skrive innholdet i filen (eller de første 100 linjene hvis den er stor) til konsollen (`console.log`) og vise et varsel (alert) på skjermen om at "Filen er lastet opp".
+    * Sørg for at koden er forberedt på å sende denne dataen videre til en "parser" i neste fase.
+
+Forklar meg kort hvordan jeg kan teste at dette fungerer ved å åpne "Developer Tools" i nettleseren for å se loggen.
+
+
+
+Nå skal vi visualisere ekte data! Jeg vil at du skal endre main.js slik at den kan lese en enkel XYZ-fil og vise den som en punktsky i 3D-scenen.
+
+Gjør følgende:
+
+1. **Fjern kuben:** Vi trenger ikke den grønne test-kuben lenger. Fjern den fra scenen.
+2. **Opprett en XYZ-parser:** - Lag en funksjon som tar tekstinnholdet fra filen vi lastet opp.
+   - Den skal splitte teksten linje for linje.
+   - For hver linje, trekk ut tre tall (X, Y, Z).
+3. **Lag 3D-punkter:**
+   - Bruk `THREE.BufferGeometry` og `THREE.Points`.
+   - Lag et `Float32Array` for å lagre posisjonene effektivt.
+   - Bruk `THREE.PointsMaterial` for å tegne punktene. Gjør punktene små (f.eks. size: 0.05) og gi dem en farge etter Z-verdien.
+4. **Sentrer modellen:** Etter at punktene er lastet, sørg for at kameraet fokuserer på punktskyen. Bruk `geometry.computeBoundingSphere()` for å finne midten og flytt kameraet eller modellen slik at den er synlig.
+5. **Legg til OrbitControls:** Siden vi nå skal se på en modell, trenger jeg å kunne rotere og zoome med musen. Importer og sett opp `OrbitControls`.
+
+Vennligst oppdater koden slik at når jeg laster opp en .xyz eller .txt fil med koordinater, så dukker de opp i 3D-rommet.
+
+
+Nå skal vi gjøre appen mer profesjonell med bedre navigasjon og et kontrollpanel.
+
+Gjør følgende endringer:
+
+1. **Installer lil-gui:** Legg til instruksjon for å installere 'lil-gui' via npm.
+2. **Bedre kamerasentrering:** - Når en fil er lastet inn, må du beregne "bounding box" for hele punktskyen.
+   - Juster kameraet slik at hele punktskyen passer perfekt i skjermbildet, uansett om den er 1 meter eller 1000 meter stor.
+3. **Legg til et kontrollpanel (GUI):**
+   - Lag en meny øverst i høyre hjørne ved hjelp av lil-gui.
+   - Legg til en glidebryter (slider) for "Point Size" (punktstørrelse) slik at jeg kan justere hvor store punktene er i sanntid.
+   - Legg til en fargevelger (color picker) for å endre fargen på punktene.
+4. **Bakgrunnsfarge:** Legg til en fargevelger i menyen for å endre bakgrunnsfargen i scenen (nyttig for å se mørke/lyse punktskyer bedre).
+5. **Akser:** Legg til en `AxesHelper` (en liten indikator som viser rød/grønn/blå akse for X, Y, Z) slik at jeg vet hva som er opp og ned.
+
+Vennligst oppdater koden slik at jeg får full kontroll over visualiseringen.
+
+
+Nå skal vi oppgradere appen med en "Selection Box" for å velge og lagre punkter.
+
+Gjør følgende endringer:
+
+1. **Lag utvalgsboksen:** - Opprett en gjennomsiktig 3D-boks (Mesh) med en synlig kant (wireframe eller EdgesGeometry).
+   - Legg til kontrollere i GUI-en (lil-gui) for å endre boksens posisjon (x, y, z) og størrelse (width, height, depth).
+2. **Filtreringslogikk:**
+   - Lag en funksjon "Velg punkter". Denne skal gå gjennom alle punktene i punktskyen og sjekke om deres posisjon er innenfor grensene til 3D-boksen.
+   - Gi de valgte punktene en annen farge (f.eks. rød) slik at jeg ser hva som er valgt.
+3. **Eksporter til fil:**
+   - Legg til en knapp i GUI-en som heter "Lagre valgte punkter".
+   - Når jeg trykker på denne, skal appen generere en ny .xyz tekstfil som kun inneholder koordinatene til punktene inni boksen.
+   - Bruk en "Blob" og en midlertidig lenke for å starte en automatisk nedlasting av filen til min PC.
+4. **TransformControls (Valgfritt men anbefalt):**
+   - Hvis mulig, legg til `THREE.TransformControls` slik at jeg kan dra i boksen direkte i 3D-scenen for å flytte eller endre størrelse på den, i stedet for å bare bruke sliderne i menyen.
+
+Forklar meg hvordan jeg bruker boksen for å velge ut dataene mine.
+
+
+Jeg vil oppdatere "Selection Box"-funksjonaliteten med følgende logikk:
+
+1. **Dynamisk størrelse:** - Når en XYZ-fil lastes inn, skal appen automatisk beregne minimum og maksimum X, Y og Z verdier for alle punktene.
+   - Sett størrelsen på Selection Box til å matche disse grensene (bounding box) for den leste filen.
+   - Plasser boksen nøyaktig i sentrum av punktskyen.
+
+2. **Default status:**
+   - Utvalgsboksen skal være usynlig og deaktivert som standard når appen starter eller en ny fil lastes inn.
+   
+3. **GUI-oppdatering:**
+   - Sørg for at sliderne for posisjon og størrelse i lil-gui oppdateres automatisk til å reflektere de nye min/max verdiene fra filen som ble lastet opp, slik at de er i riktig skala.
+
+4. **Fargeendring:**
+   - Når boksen er aktivert, skal punktene inni boksen umiddelbart skifte farge (f.eks. til rød) for å gi visuell tilbakemelding.
+
+Vennligst oppdater main.js slik at boksen tilpasser seg hver nye fil som importeres.
+
+
+Vi må justere litt mer på "Selection Box"-funksjonaliteten.
+
+Ta bort infoboksen som popper opp når jeg justerer på størrelsen. Den kan dukke opp KUN når jeg trykker på "Velg Punkter" knappen.
+
+
+Når jeg klikker på "Velg Punkter" knappen så må de punktene som ligger utenfor boksen ha en annen farge, f.eks hvit eller aller helst skjules.
+
+
+Jeg vil gjøre to spesifikke forbedringer i 3D-visningen:
+
+1. **Z-akse som "Opp":** - Konfigurer Three.js slik at Z-aksen peker oppover i stedet for Y-aksen. Dette gjøres ved å sette `camera.up.set(0, 0, 1)` og oppdatere OrbitControls med `controls.update()`.
+   - Sørg for at AxesHelper også reflekterer dette, slik at den blå linjen (Z) peker opp.
+   - Når du beregner "bounding box" for å sentrere kameraet, pass på at kameraet ser på scenen fra en vinkel som gir mening når Z er opp.
+
+2. **Toggle for Aksekors (AxesHelper):**
+   - Legg til en checkbox i GUI-en (lil-gui) som heter "Vis aksekors".
+   - Denne skal enkelt slå synligheten (`visible`) til AxesHelper av og på.
+
+3. **Justering av Selection Box:**
+   - Siden vi nå bruker Z som opp, sjekk at sliderne i GUI for "Høyde" (når man flytter/skalerer boksen) føles naturlige i forhold til den nye orienteringen.
+
+Vennligst oppdater main.js for å implementere disse endringene.
+
+
+Nå som appen har fått mange funksjoner, vil jeg refaktorere koden for å gjøre den mer oversiktlig og modulær. Jeg vil flytte logikken ut av main.js og inn i egne moduler.
+
+Vennligst organiser prosjektet mitt slik:
+
+1. **src/viewer.js**: Flytt alt som har med Three.js-oppsettet å gjøre hit (Scene, Camera, Renderer, OrbitControls, AxesHelper, og animasjons-loopen). Denne modulen skal eksportere funksjoner for å legge til/fjerne objekter og oppdatere visningen.
+2. **src/parser.js**: Flytt logikken for å lese XYZ-filer og konvertere dem til Three.js-geometri (inkludert fargehåndtering) hit.
+3. **src/ui.js**: Flytt alt som har med lil-gui og knapper å gjøre hit. Denne skal koble knappene til funksjonene i de andre modulene.
+4. **src/selection.js**: Flytt logikken for Selection Box, min/max beregninger og eksport av valgte punkter hit.
+5. **main.js**: Skal nå bare være "dirigenten" som importerer de andre modulene og starter appen.
+
+Vennligst oppdater filstrukturen og sørg for at alle "imports" og "exports" i JavaScript er riktige slik at appen fungerer nøyaktig som før. Forklar meg kort hvilke nye filer du har opprettet.
+
+
+Jeg vil erstatte alert-boksene med et statisk informasjonsdashboard i grensesnittet.
+
+Gjør følgende endringer:
+
+1. **HTML/CSS:**
+   - Opprett en ny <div> i index.html med id "dashboard". 
+   - Plasser den nederst i venstre hjørne ved hjelp av CSS.
+   - Gi den et moderne utseende: mørk semitransparent bakgrunn, hvit tekst, tynne rammer og god "padding".
+
+2. **Informasjon i dashboardet:**
+   - Vis "Totalt antall punkter".
+   - Vis "Høydeområde (Min Z til Max Z)".
+   - Lag en seksjon for et "Z-Histogram".
+
+3. **Logikk for Histogram (i en ny fil src/stats.js eller i ui.js):**
+   - Lag en funksjon som tar alle Z-verdiene fra punktskyen.
+   - Del området mellom Min Z og Max Z inn i 10 like store intervaller (bins).
+   - Tell hvor mange punkter som faller innenfor hvert intervall.
+   - Visualiser dette som 10 enkle vertikale søyler (bars) i dashboardet ved hjelp av ren HTML/CSS (div-er med ulik høyde).
+
+4. **Oppdatering:**
+   - Sørg for at dashboardet tømmes og tegnes på nytt hver gang en ny fil blir importert.
+
+Vennligst oppdater koden slik at jeg får denne visuelle statistikken uten pop-ups.
+
+
+Jeg vil legge til en funksjon for å invertere Z-aksen, da dataene noen ganger kommer med feil fortegn.
+
+Gjør følgende endringer:
+
+1. **Logikk (i src/selection.js eller src/parser.js):**
+   - Lag en funksjon `invertZ` som går gjennom alle punktene i den aktive punktskyen.
+   - For hvert punkt skal Z-verdien ganges med -1.
+   - Etter at verdiene er endret, må `geometry.attributes.position.needsUpdate` settes til `true`.
+   - Kjør også en re-sentrering av kameraet (bounding box) siden hele modellen nå vil flytte seg (f.eks. fra over til under bakken).
+   - Husk å oppdatere histogrammet og statistikk-dashboardet slik at de reflekterer de nye Z-verdiene.
+
+2. **Brukergrensesnitt (i src/ui.js):**
+   - Under "Controls" i lil-gui, legg til en knapp som heter "Inverter Z-akse".
+   - Når knappen trykkes, skal `invertZ`-funksjonen kjøres.
+
+3. **Selection Box-håndtering:**
+   - Pass på at hvis "Selection Box" er aktiv, så må den også flyttes eller oppdateres slik at den ikke blir liggende igjen der punktene var før de ble invertert.
+
+Oppdater koden slik at jeg enkelt kan snu modellen opp-ned med ett klikk.
+
+Jeg vil legge til en funksjon for å visualisere høydeforskjeller bedre ved bruk av farger (Elevation Heatmap).
+
+
+Jeg vil nå implementere Fase 7: Generering av en profesjonell PDF-rapport. Denne skal oppsummere dataene, visualiseringen og lokasjonsinformasjonen.
+
+Gjør følgende endringer i prosjektet:
+
+1. **Biblioteker og oppsett:**
+   - Legg til instruksjon for å installere 'jspdf' og 'html2canvas' via npm.
+   - Opprett en ny modul `src/report.js` for å håndtere PDF-logikken.
+
+2. **Metadata og Georeferering (i src/ui.js):**
+   - Legg til en ny mappe i lil-gui kalt "Rapport & Lokasjon".
+   - Legg til tekstfelter for: "Prosjektnavn", "Datum" (default: WGS84), "Projeksjon" (default: UTM 32N) og "Beskrivelse".
+   - Legg til en knapp: "Generer PDF-rapport".
+
+3. **Logikk for PDF-generering (i src/report.js):**
+   - **Bilde:** Ta et screenshot av 3D-visningen. Merk: Du må sette `preserveDrawingBuffer: true` i WebGLRenderer for at bildet ikke skal bli svart.
+   - **Innhold:** Lag et PDF-oppsett med jspdf som inneholder:
+     * Overskrift med Prosjektnavn og Dato.
+     * Metadata-seksjon: Koordinatsystem (Datum/Projeksjon) og Beskrivelse.
+     * Statistikk-seksjon: Totalt antall punkter, Min/Max Z-verdier (høyde).
+     * Visuell seksjon: Sett inn screenshottet av 3D-modellen.
+     * Histogram: Gjenskap Z-histogrammet visuelt i PDF-en (enten som bilde av dashboard-div-en eller ved å tegne rektangler i PDF-en).
+
+4. **Krav til PDF-eksport:**
+   - Sørg for at PDF-en lastes ned automatisk med et fornuftig filnavn (f.eks. "Rapport_Dato.pdf").
+   - Bruk en stilren layout med tabeller for statistikken slik at det ser profesjonelt ut.
+
+5. **Oppdatering av Dashboard:**
+   - Sørg for at de valgte verdiene for Datum og Projeksjon også vises i det statiske dashboardet på skjermen i sanntid.
+
+Vennligst oppdater koden i de relevante filene (ui.js, report.js og main.js) for å ferdigstille denne funksjonaliteten.
