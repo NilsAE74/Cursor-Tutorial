@@ -6,7 +6,7 @@ En interaktiv 3D-visualiseringsapplikasjon for punktskyer bygget med Three.js og
 
 ## 🚀 Live Demo
 
-**⚠️ FIRST TIME SETUP REQUIRED:** If deployment is failing, see [SETUP_GITHUB_PAGES.md](SETUP_GITHUB_PAGES.md) for setup instructions.
+**⚠️ DEPLOYMENT FAILING? → See [QUICK_FIX.md](QUICK_FIX.md) for 2-minute setup guide!**
 
 Applikasjonen er deployet og tilgjengelig på:
 **https://nilsae74.github.io/Cursor-Tutorial/**
