@@ -1,5 +1,7 @@
 # 3D Punktsky Visualisering
 
+[![Deploy to GitHub Pages](https://github.com/NilsAE74/Cursor-Tutorial/actions/workflows/deploy.yml/badge.svg)](https://github.com/NilsAE74/Cursor-Tutorial/actions/workflows/deploy.yml)
+
 En interaktiv 3D-visualiseringsapplikasjon for punktskyer bygget med Three.js og Vite.
 
 ## 🚀 Live Demo
@@ -67,6 +69,16 @@ Applikasjonen er deployet og tilgjengelig på:
 ## 📦 Deployment
 
 Prosjektet er konfigurert for automatisk deployment til GitHub Pages.
+
+### Verifiser Deployment-konfigurasjon
+
+Før du deployer, kan du kjøre verifikasjonsscriptet:
+
+```bash
+./verify-deployment.sh
+```
+
+Dette scriptet sjekker at alt er korrekt konfigurert for deployment.
 
 ### Automatisk Deployment
 

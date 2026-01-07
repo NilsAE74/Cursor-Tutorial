@@ -6,6 +6,22 @@ Dette prosjektet er konfigurert for automatisk deployment til GitHub Pages ved h
 
 ## 📋 Hurtigstart
 
+### Verifiser Konfigurasjon (Anbefalt)
+
+Før du aktiverer deployment, kjør verifikasjonsscriptet for å sjekke at alt er riktig konfigurert:
+
+```bash
+chmod +x verify-deployment.sh  # Kun nødvendig første gang
+./verify-deployment.sh
+```
+
+Scriptet vil sjekke:
+- ✓ Workflow-fil eksisterer
+- ✓ Vite-konfigurasjon er korrekt
+- ✓ Build-script fungerer
+- ✓ Gitignore er riktig satt opp
+- ✓ Dokumentasjon er på plass
+
 ### Forutsetninger
 
 ✅ GitHub-konto  
