@@ -232,6 +232,151 @@ export function getRenderer() {
 }
 
 /**
+ * Genererer et kart-bilde (topp-visning) for PDF-rapport
+ * Bruker ortografisk kamera for flat projeksjon uten perspektivforvrengning
+ */
+export async function generateMapImage(resolution = 2048) {
+  return new Promise((resolve, reject) => {
+    try {
+      if (!pointCloud) {
+        reject(new Error('Ingen punktsky å visualisere'));
+        return;
+      }
+
+      // === 1. Lagre nåværende tilstand ===
+      const originalBackground = scene.background.clone();
+      const originalAxesVisible = axesHelper ? axesHelper.visible : false;
+      const originalRendererSize = {
+        width: renderer.domElement.width,
+        height: renderer.domElement.height
+      };
+      const originalPointSize = pointCloud.material.size;
+
+      // === 2. Sett opp kart-modus ===
+      scene.background = new THREE.Color(0xffffff); // Hvit bakgrunn
+      if (axesHelper) axesHelper.visible = false;
+
+      // Øk punktstørrelse for bedre synlighet
+      pointCloud.material.size = originalPointSize * 6;
+      pointCloud.material.needsUpdate = true;
+
+      // Forsterk fargene for sterkere visning mot hvit bakgrunn
+      const originalColors = pointCloud.geometry.attributes.color.array.slice(); // Kopier
+      const colors = pointCloud.geometry.attributes.color.array;
+      const colorBoost = 1.8; // 80% sterkere farger
+      
+      for (let i = 0; i < colors.length; i++) {
+        // Boost fargen, men behold metning ved å ikke bare multiplisere
+        const boosted = colors[i] * colorBoost;
+        colors[i] = Math.min(1.0, boosted);
+      }
+      pointCloud.geometry.attributes.color.needsUpdate = true;
+
+      // === 3. Beregn bounds for ortografisk kamera ===
+      pointCloud.geometry.computeBoundingBox();
+      const boundingBox = pointCloud.geometry.boundingBox;
+      const center = new THREE.Vector3();
+      boundingBox.getCenter(center);
+      
+      const size = new THREE.Vector3();
+      boundingBox.getSize(size);
+      
+      const maxXY = Math.max(size.x, size.y);
+      const padding = maxXY * 0.1;
+
+      // === 4. Opprett ortografisk kamera ===
+      const frustumSize = (maxXY + padding * 2) / 2;
+      
+      const orthoCamera = new THREE.OrthographicCamera(
+        -frustumSize, frustumSize,
+        frustumSize, -frustumSize,
+        0.1, size.z * 10 + 100
+      );
+      
+      orthoCamera.position.set(center.x, center.y, boundingBox.max.z + size.z + 10);
+      orthoCamera.up.set(0, 1, 0);
+      orthoCamera.lookAt(center.x, center.y, center.z);
+      orthoCamera.updateProjectionMatrix();
+
+      // === 5. Legg til GridHelper ===
+      const gridZ = center.z;
+      const niceIntervals = [1, 2, 5, 10, 20, 25, 50, 100, 200, 500];
+      const rawCellSize = maxXY / 10;
+      
+      let gridCellSize = 10;
+      for (const interval of niceIntervals) {
+        if (interval >= rawCellSize * 0.7) {
+          gridCellSize = interval;
+          break;
+        }
+      }
+      
+      let gridDivisions = Math.ceil(maxXY / gridCellSize) + 2;
+      if (gridDivisions % 2 !== 0) gridDivisions++;
+      const gridSize = gridDivisions * gridCellSize;
+      
+      const gridHelper = new THREE.GridHelper(gridSize, gridDivisions, 0x888888, 0xcccccc);
+      gridHelper.rotation.x = Math.PI / 2;
+      gridHelper.position.set(center.x, center.y, gridZ);
+      scene.add(gridHelper);
+
+      // === 6. Render til høy-oppløselig bilde ===
+      renderer.setSize(resolution, resolution);
+      renderer.render(scene, orthoCamera);
+      const imageDataUrl = renderer.domElement.toDataURL('image/png', 1.0);
+
+      // === 7. Gjenopprett original tilstand ===
+      scene.remove(gridHelper);
+      gridHelper.dispose();
+      
+      scene.background = originalBackground;
+      if (axesHelper) axesHelper.visible = originalAxesVisible;
+      
+      // Gjenopprett original punktstørrelse
+      pointCloud.material.size = originalPointSize;
+      pointCloud.material.needsUpdate = true;
+      
+      // Gjenopprett originale farger
+      for (let i = 0; i < originalColors.length; i++) {
+        colors[i] = originalColors[i];
+      }
+      pointCloud.geometry.attributes.color.needsUpdate = true;
+
+      renderer.setSize(originalRendererSize.width, originalRendererSize.height);
+      renderer.render(scene, camera);
+
+      // Beregn koordinater for akser
+      const gridCenterOriginal = {
+        x: center.x + coordinateOffset.x,
+        y: center.y + coordinateOffset.y
+      };
+      
+      const visibleBounds = {
+        minX: (center.x - frustumSize) + coordinateOffset.x,
+        maxX: (center.x + frustumSize) + coordinateOffset.x,
+        minY: (center.y - frustumSize) + coordinateOffset.y,
+        maxY: (center.y + frustumSize) + coordinateOffset.y
+      };
+
+      console.log('Kart-bilde generert med sterke farger');
+      console.log(`Rutenett: ${gridCellSize}m per rute`);
+      
+      resolve({
+        imageDataUrl,
+        bounds: visibleBounds,
+        gridCenter: gridCenterOriginal,
+        size: { x: size.x, y: size.y, z: size.z },
+        gridCellSize
+      });
+
+    } catch (error) {
+      console.error('Feil ved generering av kart-bilde:', error);
+      reject(error);
+    }
+  });
+}
+
+/**
  * Henter camera
  */
 export function getCamera() {

@@ -222,3 +222,37 @@ Gjør følgende endringer i prosjektet:
    - Sørg for at de valgte verdiene for Datum og Projeksjon også vises i det statiske dashboardet på skjermen i sanntid.
 
 Vennligst oppdater koden i de relevante filene (ui.js, report.js og main.js) for å ferdigstille denne funksjonaliteten.
+
+
+Jeg vil oppgradere PDF-rapporten i `src/report.js` betydelig. Den nåværende løsningen med enkle screenshots er ikke elegant nok.
+
+Jeg ønsker en profesjonell rapport der 3D-visualiseringen erstattes av et rent, teknisk "kartutsnitt" sett ovenfra.
+
+Gjør følgende endringer i koden, primært i `src/report.js` og `src/viewer.js`:
+
+1.  **Dedikert Render-funksjon for Rapporten:**
+    - I stedet for å ta et screenshot av det brukeren ser nå, opprett en ny (async) funksjon, f.eks. `generateMapImage(scene, renderer, originalCamera, originalControls)`.
+    - Denne funksjonen skal gjøre følgende i rekkefølge:
+        a. **Lagre tilstand:** Husk nåværende bakgrunnsfarge og kameraposisjon.
+        b. **Sett opp "Kart-modus":** Endre scenens bakgrunn til helt hvit (0xffffff).
+        c. **Ortografisk Kamera:** Opprett et midlertidig `THREE.OrthographicCamera`. Dette er avgjørende for å få et flatt "kart-utseende" uten perspektivforvrengning. Plasser det høyt over modellen, pekende rett ned (langs Z-aksen hvis Z er opp). Juster zoomen slik at hele punktskyens "bounding box" fyller bildet.
+        d. **Legg til Grid/Akser:** Legg til en `THREE.GridHelper` (et rutenett) på XY-planet (z=0) for å visualisere skalaen langs X og Y aksene. Legg gjerne til en enkel `AxesHelper` i hjørnet av dette utsnittet også.
+        e. **Render:** Render scenen med det ortografiske kameraet til en høy-oppløselig dataURL (f.eks. 2048x2048 piksler for god kvalitet i PDF).
+        f. **Gjenopprett:** Fjern GridHelper/AxesHelper, bytt tilbake til det originale perspektivkameraet og den originale mørke bakgrunnsfargen. Sørg for at brukerens visning på skjermen ikke "blinker" eller endres permanent.
+
+2.  **Oppdater PDF-layout (i src/report.js):**
+    - Bruk `jspdf` sine innebygde funksjoner for tekst og linjer for å lage en stilig header og footer, i stedet for å stole på HTML-screenshots. Bruk en profesjonell font (f.eks. Helvetica/Arial som er standard i jspdf).
+    - **Side 1 - Forside:**
+        * Stor tittel: Prosjektnavn.
+        * Undertittel: "Punktsky-analyse Rapport".
+        * Dato og generert av.
+    - **Side 2 - Data og Visualisering:**
+        * Seksjon 1: Metadata & Lokasjon (Datum, Projeksjon, Beskrivelse - hentet fra UI).
+        * Seksjon 2: Visualisering. Sett inn det genererte "Topp-visning" bildet her. Det skal ha hvit bakgrunn og tydelig rutenett.
+        * Seksjon 3: Statistikk-tabell (Antall punkter, Høydeområde).
+
+3.  **Generelt:**
+    - Sørg for at koden er robust og håndterer at det kan ta et sekund å generere det høyoppløselige bildet før PDF-en lastes ned. Vis gjerne en "Genererer rapport..." status i UI mens dette pågår.
+    - **Viktig:** Bruk kun standardbibliotekene vi allerede har (three.js, jspdf). Ikke introduser nye, ukjente biblioteker.
+
+Oppdater koden for å lage denne profesjonelle, kart-baserte rapporten.
