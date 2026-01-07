@@ -28,12 +28,18 @@ fi
 # Sjekk 2: Vite config har riktig base path
 echo -n "✓ Sjekker vite.config.js... "
 if [ -f "vite.config.js" ]; then
-    if grep -q "base: '/Cursor-Tutorial/'" vite.config.js; then
+    # Extract repository name from git remote URL
+    REPO_NAME=$(git config --get remote.origin.url | sed -e 's/.*\/\([^\/]*\)\.git/\1/' -e 's/.*\/\([^\/]*\)$/\1/')
+    if [ -z "$REPO_NAME" ]; then
+        REPO_NAME="Cursor-Tutorial"  # Fallback
+    fi
+    
+    if grep -q "base: '/$REPO_NAME/'" vite.config.js; then
         echo -e "${GREEN}OK${NC}"
     else
         echo -e "${YELLOW}ADVARSEL${NC}"
-        echo "  Base path i vite.config.js matcher ikke forventet verdi"
-        echo "  Forventet: base: '/Cursor-Tutorial/'"
+        echo "  Base path i vite.config.js matcher ikke repository-navnet"
+        echo "  Forventet: base: '/$REPO_NAME/'"
         WARNINGS=$((WARNINGS + 1))
     fi
 else
@@ -104,14 +110,21 @@ fi
 
 # Sjekk 7: Test build
 echo -n "✓ Tester build... "
-if npm run build > /dev/null 2>&1; then
+BUILD_OUTPUT=$(mktemp)
+if npm run build > "$BUILD_OUTPUT" 2>&1; then
     echo -e "${GREEN}OK${NC}"
-    rm -rf dist  # Rydd opp
+    # Cleanup build artifacts if they exist
+    if [ -d "dist" ]; then
+        rm -rf dist
+    fi
 else
     echo -e "${RED}FEIL${NC}"
-    echo "  Build feilet. Kjør 'npm run build' for detaljer"
+    echo "  Build feilet. Se output nedenfor:"
+    echo ""
+    cat "$BUILD_OUTPUT"
     ERRORS=$((ERRORS + 1))
 fi
+rm -f "$BUILD_OUTPUT"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
