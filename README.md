@@ -6,6 +6,8 @@ En interaktiv 3D-visualiseringsapplikasjon for punktskyer bygget med Three.js og
 
 ## 🚀 Live Demo
 
+**⚠️ DEPLOYMENT FAILING? → See [QUICK_FIX.md](QUICK_FIX.md) for 2-minute setup guide!**
+
 Applikasjonen er deployet og tilgjengelig på:
 **https://nilsae74.github.io/Cursor-Tutorial/**
 
@@ -70,6 +72,18 @@ Applikasjonen er deployet og tilgjengelig på:
 
 Prosjektet er konfigurert for automatisk deployment til GitHub Pages.
 
+### ⚠️ VIKTIG: Første gang oppsett
+
+**Hvis deployment feiler med 404-feil, må du først aktivere GitHub Pages!**
+
+📖 **Se [SETUP_GITHUB_PAGES.md](SETUP_GITHUB_PAGES.md) for detaljerte instruksjoner.**
+
+Kort oppsummering:
+1. Gå til [Settings → Pages](https://github.com/NilsAE74/Cursor-Tutorial/settings/pages)
+2. Sett **Source** til `GitHub Actions`
+3. Sett **Workflow permissions** til "Read and write"
+4. Hvis repositoryet er privat, kreves GitHub Pro eller gjør det offentlig
+
 ### Verifiser Deployment-konfigurasjon
 
 Før du deployer, kan du kjøre verifikasjonsscriptet:
@@ -82,20 +96,11 @@ Dette scriptet sjekker at alt er korrekt konfigurert for deployment.
 
 ### Automatisk Deployment
 
-Hver gang du pusher til `main`-branchen, vil GitHub Actions automatisk:
+Når GitHub Pages er aktivert, vil hver push til `main`-branchen automatisk:
 
 1. Bygge applikasjonen
 2. Deploye til GitHub Pages
 3. Gjøre den tilgjengelig på `https://nilsae74.github.io/Cursor-Tutorial/`
-
-### Aktivere GitHub Pages
-
-Hvis dette er første gang du setter opp deployment, følg disse stegene:
-
-1. Gå til repository-innstillingene på GitHub
-2. Naviger til **Settings** → **Pages**
-3. Under **Source**, velg **GitHub Actions**
-4. Deployment vil starte automatisk ved neste push til `main`
 
 ### Manuell Deployment
 
@@ -197,10 +202,16 @@ npm run build
 
 ### Deployment feiler
 
+**404 Error - "Failed to create deployment":**
+- **Root cause:** GitHub Pages er ikke aktivert
+- **Solution:** Følg instruksjonene i [SETUP_GITHUB_PAGES.md](SETUP_GITHUB_PAGES.md)
+
+**Andre deployment-problemer:**
 1. Sjekk at GitHub Pages er aktivert i repository-innstillingene
 2. Verifiser at workflow-filen `.github/workflows/deploy.yml` eksisterer
 3. Sjekk **Actions**-fanen for detaljerte feilmeldinger
 4. Sørg for at `base`-stien i `vite.config.js` matcher repository-navnet
+5. Se [DEPLOYMENT.md](DEPLOYMENT.md) for fullstendig feilsøkingsguide
 
 ### Svart skjerm i produksjon
 

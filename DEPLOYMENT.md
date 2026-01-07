@@ -4,6 +4,18 @@
 
 Dette prosjektet er konfigurert for automatisk deployment til GitHub Pages ved hjelp av GitHub Actions.
 
+---
+
+## ⚠️ VIKTIG: Hvis deployment feiler med 404-feil
+
+**GitHub Pages må aktiveres først!**
+
+📖 Se [SETUP_GITHUB_PAGES.md](SETUP_GITHUB_PAGES.md) for en kort og konsis guide.
+
+Denne filen (DEPLOYMENT.md) inneholder fullstendig dokumentasjon for både oppsett og feilsøking.
+
+---
+
 ## 📋 Hurtigstart
 
 ### Verifiser Konfigurasjon (Anbefalt)
@@ -157,7 +169,28 @@ curl -I https://nilsae74.github.io/Cursor-Tutorial/
 
 ## 🐛 Feilsøking
 
-### Problem: "404 - Page not found"
+### Problem: "404 - Failed to create deployment" i GitHub Actions
+
+**Dette er den vanligste feilen!**
+
+**Root Cause:** GitHub Pages er ikke aktivert i repository-innstillingene.
+
+**Error message:**
+```
+Error: Failed to create deployment (status: 404)
+Ensure GitHub Pages has been enabled
+```
+
+**Løsning:**
+📖 **Se [SETUP_GITHUB_PAGES.md](SETUP_GITHUB_PAGES.md) for detaljerte instruksjoner.**
+
+Kort oppsummering:
+1. Gå til https://github.com/NilsAE74/Cursor-Tutorial/settings/pages
+2. Under "Build and deployment", sett **Source** til `GitHub Actions`
+3. Sørg for at workflow permissions er satt til "Read and write"
+4. Hvis repositoryet er **privat**, kreves GitHub Pro eller du må gjøre det offentlig
+
+### Problem: "404 - Page not found" når du besøker siden
 
 **Løsning:**
 1. Verifiser at GitHub Pages er aktivert (Settings → Pages)
