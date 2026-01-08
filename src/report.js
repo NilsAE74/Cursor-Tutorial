@@ -82,7 +82,7 @@ function createCoverPage(pdf, reportData) {
   });
   
   pdf.text(`Generert: ${date}`, MARGIN + 10, yPos + 28);
-  pdf.text(`Koordinatsystem: ${reportData.datum || 'WGS84'}`, MARGIN + 10, yPos + 38);
+  pdf.text(`Koordinatsystem: ${reportData.datum || 'ED50'}`, MARGIN + 10, yPos + 38);
   pdf.text(`Projeksjon: ${reportData.projection || 'UTM 32N'}`, MARGIN + 10, yPos + 48);
 }
 

@@ -281,3 +281,34 @@ Gjør følgende endringer i `generateMapImage` og PDF-logikken:
     * Brukeren skal umiddelbart kunne se hvilken høyde fargene representerer via legenden.
 
 Vennligst implementer disse forbedringene i `src/report.js`.
+
+Jeg vil legge til et hjelpe-grid som viser de *originale* kartkoordinatene (UTM/World), selv om 3D-modellen er sentrert rundt 0,0,0.
+
+Gjør følgende endringer:
+
+1.  **Ny modul `src/grid.js`:**
+    - Opprett en klasse/funksjon `SurveyGrid`.
+    - Denne skal ta inn:
+      a. `boundingBox` (størrelsen på modellen).
+      b. `centerOffset` (vektoren vi trakk fra de originale koordinatene for å sentrere modellen).
+    - **Logikk:**
+      - Beregn et fornuftig intervall for grid-linjene (f.eks. hver 10., 50. eller 100. meter) basert på modellens størrelse.
+      - Tegn linjer (Lines) på XY-planet som dekker hele modellens utstrekning. Plasser gridet like under modellens laveste Z-punkt.
+      - **Koordinat-labels:** Lag funksjonalitet for å plassere tekst-labels langs kanten av gridet.
+        - *Viktig:* Verdien som vises i teksten skal være: `LocalPosition + centerOffset`.
+        - Bruk `THREE.Sprite` med canvas-tekst for å vise disse tallene, slik at de alltid vender mot kameraet og er lesbare.
+
+2.  **Integrasjon i `viewer.js` / `main.js`:**
+    - Når en fil lastes inn og sentreres, lagre `offset`-vektoren (forskjellen mellom original senter og 0,0,0).
+    - Initialiser `SurveyGrid` med den nye bounding box-en og denne offset-en.
+    - Sørg for at gridet oppdateres/tegnes på nytt hvis man laster inn en ny fil.
+
+3.  **UI-kontroll (i `ui.js`):**
+    - Legg til en sjekkboks under "Visning" som heter "Vis Koordinat-grid".
+    - Denne skal slå av/på synligheten til hele grid-objektet (linjer og tekst).
+
+4.  **Utseende:**
+    - Linjene skal være lysegrå og diskret.
+    - Teksten skal være lita, men lesbar, og vise f.eks. "N: 6300100" og "Ø: 500200" (eller bare tallene).
+
+Vennligst implementer dette slik at jeg kan se hvor i verden modellen befinner seg.

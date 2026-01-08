@@ -5,7 +5,7 @@
 let dashboardElement;
 let currentFileName = '';
 let currentMetadata = {
-  datum: 'WGS84',
+  datum: 'ED50',
   projection: 'UTM 32N'
 };
 
