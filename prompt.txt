@@ -228,6 +228,7 @@ Jeg vil oppgradere PDF-rapporten i `src/report.js` betydelig. Den nåværende l�
 
 Jeg ønsker en profesjonell rapport der 3D-visualiseringen erstattes av et rent, teknisk "kartutsnitt" sett ovenfra.
 
+
 Gjør følgende endringer i koden, primært i `src/report.js` og `src/viewer.js`:
 
 1.  **Dedikert Render-funksjon for Rapporten:**
@@ -312,3 +313,20 @@ Gjør følgende endringer:
     - Teksten skal være lita, men lesbar, og vise f.eks. "N: 6300100" og "Ø: 500200" (eller bare tallene).
 
 Vennligst implementer dette slik at jeg kan se hvor i verden modellen befinner seg.
+
+
+Jeg vil ha et ikon (favicon) som vises i nettleser-fanen.
+
+Siden jeg ikke har en bildefil, vil jeg at du skal gjøre følgende:
+
+1. **Lag en SVG-fil:**
+   - Opprett en ny fil `public/favicon.svg`.
+   - Innholdet skal være en enkel, stilig isometrisk kube (hexagon-form) eller en stilisert punktsky, som passer til temaet "3D Viewer".
+   - Bruk farger som matcher appens mørke tema (f.eks. blå/turkis på gjennomsiktig bakgrunn).
+
+2. **Oppdater HTML:**
+   - Gå inn i `index.html`.
+   - Legg til riktig `<link rel="icon" ...>` tag i `<head>` som peker på den nye `/favicon.svg`.
+   - Sørg også for at `<title>` i HTML-filen er oppdatert til noe passende, f.eks. "3D Point Cloud Viewer".
+
+Fiks dette slik at jeg ser logoen i fanen neste gang jeg oppdaterer siden.
