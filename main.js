@@ -50,9 +50,8 @@ viewer.animate();
 // Håndter fil-opplasting
 const fileInput = document.getElementById('fileInput');
 
-fileInput.addEventListener('change', async (event) => {
-  const file = event.target.files[0];
-  
+// Funksjon for å laste fil (brukes av både file input og drag-drop)
+function loadFile(file) {
   if (!file) {
     stats.showDashboardMessage('Ingen fil valgt', 'error');
     return;
@@ -167,7 +166,53 @@ fileInput.addEventListener('change', async (event) => {
   
   // Les filen som tekst
   reader.readAsText(file);
+}
+
+// Event listener for fil-input
+fileInput.addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  loadFile(file);
+});
+
+// Drag and Drop funksjonalitet
+const body = document.body;
+
+// Hindre default drag behavior
+body.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  body.classList.add('dragging');
+});
+
+body.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  body.classList.remove('dragging');
+});
+
+// Håndter drop
+body.addEventListener('drop', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  body.classList.remove('dragging');
+  
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    const file = files[0];
+    
+    // Sjekk filtype
+    const validExtensions = ['.txt', '.xyz', '.pcd', '.ply'];
+    const fileName = file.name.toLowerCase();
+    const isValid = validExtensions.some(ext => fileName.endsWith(ext));
+    
+    if (isValid) {
+      loadFile(file);
+    } else {
+      stats.showDashboardMessage('Ugyldig filtype. Støttede formater: .txt, .xyz, .pcd, .ply', 'error');
+    }
+  }
 });
 
 console.log('3D Punktsky Visualisering - Klar!');
 console.log('Last opp en .xyz fil for å komme i gang.');
+console.log('Du kan også dra og slippe filer direkte på siden!');
