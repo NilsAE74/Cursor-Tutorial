@@ -3,6 +3,7 @@
  */
 
 let dashboardElement;
+let currentFileName = '';
 let currentMetadata = {
   datum: 'WGS84',
   projection: 'UTM 32N'
@@ -21,8 +22,13 @@ export function initDashboard() {
 /**
  * Oppdaterer dashboard med punktsky-statistikk
  */
-export function updateDashboard(pointCount, bounds, positions) {
+export function updateDashboard(pointCount, bounds, positions, fileName = '') {
   if (!dashboardElement) return;
+  
+  // Lagre filnavn hvis det er gitt
+  if (fileName) {
+    currentFileName = fileName;
+  }
   
   const { minZ, maxZ } = bounds;
   
@@ -35,6 +41,13 @@ export function updateDashboard(pointCount, bounds, positions) {
   // Opprett HTML for dashboard
   const html = `
     <h3>📊 Punktsky Statistikk</h3>
+    
+    ${currentFileName ? `
+    <div class="stat-row">
+      <span class="stat-label">Filnavn:</span>
+      <span class="stat-value">${currentFileName}</span>
+    </div>
+    ` : ''}
     
     <div class="stat-row">
       <span class="stat-label">Datum:</span>

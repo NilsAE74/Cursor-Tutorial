@@ -91,7 +91,7 @@ fileInput.addEventListener('change', async (event) => {
       viewer.setCoordinateOffset(offset.x, offset.y, offset.z);
       
       // Oppdater dashboard med statistikk (bruker ORIGINALE posisjoner for histogram)
-      stats.updateDashboard(count, bounds, positions);
+      stats.updateDashboard(count, bounds, positions, file.name);
       
       // Lagre statistikk for rapport
       ui.updateStats({

@@ -256,3 +256,28 @@ Gjør følgende endringer i koden, primært i `src/report.js` og `src/viewer.js`
     - **Viktig:** Bruk kun standardbibliotekene vi allerede har (three.js, jspdf). Ikke introduser nye, ukjente biblioteker.
 
 Oppdater koden for å lage denne profesjonelle, kart-baserte rapporten.
+
+Jeg trenger å forbedre kvaliteten på "Topp-visning" bildet i PDF-rapporten (`src/report.js`). Bildet som genereres nå har punkter som er for utydelige/blasse mot hvit bakgrunn, og det mangler en fargeforklaring.
+
+Gjør følgende endringer i `generateMapImage` og PDF-logikken:
+
+1.  **Løs problemet med "blasse" punkter (Visibility Boost):**
+    * Før du rendrer bildet til rapporten:
+        * Lagre den originale `pointSize` og `opacity` fra materialet.
+        * **Øk punktstørrelsen:** Sett punktstørrelsen (size) til å være 2x eller 3x av det den er i 3D-visningen. Dette er viktig for at punktene skal synes godt på høyoppløselige utskrifter.
+        * **Full opasitet:** Sett `material.opacity = 1.0` og `material.transparent = false` midlertidig for å sikre at fargene blir kraftige og solide.
+    * Etter rendring: Tilbakestill størrelse og opasitet til originalverdiene umiddelbart, slik at 3D-visningen i nettleseren ikke påvirkes.
+
+2.  **Legg til en Legend (Tegnforklaring) for Z-verdier:**
+    * Opprett en hjelpefunksjon, f.eks. `createLegend(minZ, maxZ)`, som returnerer en DataURL (bilde).
+    * Denne funksjonen skal:
+        * Bruke et midlertidig `<canvas>`-element (f.eks. 300px bredt, 50px høyt).
+        * Tegne en **farge-gradient** som matcher den fargeskalaen vi bruker på punktene (f.eks. Blå -> Grønn -> Gul -> Rød, eller den logikken som er aktiv).
+        * Legge til tekst-labels for `Min Z` (til venstre), `Mid Z` (senter) og `Max Z` (til høyre). Bruk svart tekst for god kontrast.
+    * I PDF-genereringen: Bruk `doc.addImage` til å plassere denne legenden pent i øvre høyre hjørne av kart-bildet (oppå visualiseringen).
+
+3.  **Resultat:**
+    * Rapporten skal nå ha tydelige, skarpe punkter mot hvit bakgrunn.
+    * Brukeren skal umiddelbart kunne se hvilken høyde fargene representerer via legenden.
+
+Vennligst implementer disse forbedringene i `src/report.js`.
