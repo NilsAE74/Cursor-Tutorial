@@ -118,13 +118,13 @@ export function generateDefaultCloud() {
   
   // Randomiserte parametere for variert terreng
   const amp1 = 2 + Math.random() * 2;      // 2-4m (store bølger)
-  const amp2 = 1.5 + Math.random() * 1.5;  // 1.5-3m (medium bølger)
+  const amp2 = 1.5 + Math.random() * 1;  // 1.5-3m (medium bølger)
   const amp3 = 1 + Math.random() * 1;      // 1-2m (små bølger)
-  const amp4 = 2 + Math.random() * 1.5;    // 2-3.5m (diagonale bølger)
+  const amp4 = 2 + Math.random() * 1;    // 2-3.5m (diagonale bølger)
   
-  const phase1 = Math.random() * Math.PI * 2;
+  const phase1 = Math.random() * Math.PI * 1;
   const phase2 = Math.random() * Math.PI * 2;
-  const phase3 = Math.random() * Math.PI * 2;
+  const phase3 = Math.random() * Math.PI * 1;
   const phase4 = Math.random() * Math.PI * 2;
   
   console.log(`📊 Amplituder: ${amp1.toFixed(1)}m, ${amp2.toFixed(1)}m, ${amp3.toFixed(1)}m, ${amp4.toFixed(1)}m`);

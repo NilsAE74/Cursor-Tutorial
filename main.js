@@ -88,19 +88,19 @@ async function loadDefaultCloud() {
     selection.setCoordinateOffset(offset.x, offset.y, offset.z);
     viewer.setCoordinateOffset(offset.x, offset.y, offset.z);
     
-    // Oppdater dashboard med statistikk
-    const resolution = stats.updateDashboard(totalCount, combinedBounds, combinedPositions, 'Default Terreng + Logo');
+    // Oppdater dashboard med statistikk (KUN TERRENG, ikke logo)
+    const resolution = stats.updateDashboard(terrainData.count, terrainData.bounds, terrainData.positions, 'Default Terreng');
     
     // Oppdater legend med Z-verdier (KUN TERRENG, ikke logo)
     ui.updateLegend(terrainData.bounds.minZ, terrainData.bounds.maxZ);
     
-    // Lagre statistikk for rapport
+    // Lagre statistikk for rapport (KUN TERRENG)
     ui.updateStats({
-      pointCount: totalCount,
-      minZ: combinedBounds.minZ,
-      maxZ: combinedBounds.maxZ,
-      areaX: combinedBounds.maxX - combinedBounds.minX,
-      areaY: combinedBounds.maxY - combinedBounds.minY,
+      pointCount: terrainData.count,
+      minZ: terrainData.bounds.minZ,
+      maxZ: terrainData.bounds.maxZ,
+      areaX: terrainData.bounds.maxX - terrainData.bounds.minX,
+      areaY: terrainData.bounds.maxY - terrainData.bounds.minY,
       resolution: resolution
     });
     
@@ -155,7 +155,7 @@ async function loadDefaultCloud() {
     viewer.setIsDefaultCloud(true, combinedVelocities);
     
     console.log('Punktsky med logo lastet!');
-    stats.showDashboardMessage(`✓ Default Terreng + Logo lastet! ${totalCount.toLocaleString('nb-NO')} punkter visualisert.`, 'info');
+    stats.showDashboardMessage(`✓ Terreng lastet med ${terrainData.count.toLocaleString('nb-NO')} punkter (+ Logo: ${logoData.count.toLocaleString('nb-NO')} punkter)`, 'info');
     
   } catch (error) {
     console.error('Feil ved lasting av default punktsky:', error);

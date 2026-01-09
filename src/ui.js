@@ -58,7 +58,7 @@ export function initGUI() {
   // Punktsky innstillinger folder
   pointFolder = gui.addFolder('Punktsky Innstillinger');
   
-  const sizeController = pointFolder.add(settings, 'pointSize', 0.01, 0.5, 0.01).name('Point Size');
+  const sizeController = pointFolder.add(settings, 'pointSize', 0.01, 1, 0.01).name('Point Size');
   const colorController = pointFolder.addColor(settings, 'pointColor').name('Point Color');
   const heightColorController = pointFolder.add(settings, 'useHeightColor').name('Høyde-basert Farge');
   pointFolder.close();
