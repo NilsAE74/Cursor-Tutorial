@@ -95,7 +95,7 @@ export function centerPositions(positions, bounds) {
  * - Realistiske UTM-koordinater (500.000 / 6.000.000 område)
  */
 export function generateDefaultCloud() {
-  console.log('Genererer default punktsky...');
+  console.log('🏔️ Genererer random default terreng...');
   
   const positions = [];
   const colors = [];
@@ -103,7 +103,7 @@ export function generateDefaultCloud() {
   // UTM-koordinater i 500.000 / 6.000.000 området
   const baseX = 500000;
   const baseY = 6000000;
-  const baseZ = -70;
+  const baseZ = -20;
   
   // Terrengstørrelse: 100x100 meter
   const sizeX = 100;
@@ -115,6 +115,19 @@ export function generateDefaultCloud() {
   
   const stepX = sizeX / (gridResX - 1);
   const stepY = sizeY / (gridResY - 1);
+  
+  // Randomiserte parametere for variert terreng
+  const amp1 = 2 + Math.random() * 2;      // 2-4m (store bølger)
+  const amp2 = 1.5 + Math.random() * 1.5;  // 1.5-3m (medium bølger)
+  const amp3 = 1 + Math.random() * 1;      // 1-2m (små bølger)
+  const amp4 = 2 + Math.random() * 1.5;    // 2-3.5m (diagonale bølger)
+  
+  const phase1 = Math.random() * Math.PI * 2;
+  const phase2 = Math.random() * Math.PI * 2;
+  const phase3 = Math.random() * Math.PI * 2;
+  const phase4 = Math.random() * Math.PI * 2;
+  
+  console.log(`📊 Amplituder: ${amp1.toFixed(1)}m, ${amp2.toFixed(1)}m, ${amp3.toFixed(1)}m, ${amp4.toFixed(1)}m`);
   
   let minZ = Infinity;
   let maxZ = -Infinity;
@@ -128,10 +141,10 @@ export function generateDefaultCloud() {
       
       // Bruk flere sinus-bølger for å lage et interessant terreng
       // Kombinerer store bølger med små bølger for naturlig utseende
-      const wave1 = Math.sin(i / 10) * 3;  // Store bølger (3m amplitude)
-      const wave2 = Math.sin(j / 8) * 2;   // Medium bølger (2m amplitude)
-      const wave3 = Math.sin(i / 3) * Math.cos(j / 4) * 1.5;  // Små bølger (1.5m amplitude)
-      const wave4 = Math.sin((i + j) / 15) * 2.5;  // Diagonale bølger
+      const wave1 = Math.sin(i / 10 + phase1) * amp1;  // Store bølger
+      const wave2 = Math.sin(j / 8 + phase2) * amp2;   // Medium bølger
+      const wave3 = Math.sin(i / 3 + phase3) * Math.cos(j / 4) * amp3;  // Små bølger
+      const wave4 = Math.sin((i + j) / 15 + phase4) * amp4;  // Diagonale bølger
       
       // Legg til litt "støy" for mer naturlig variasjon
       const noise = (Math.sin(i * 0.5) * Math.cos(j * 0.7) + 
@@ -150,10 +163,9 @@ export function generateDefaultCloud() {
     }
   }
   
-  console.log(`Default punktsky generert: ${tempPoints.length} punkter`);
-  console.log(`X range: ${baseX.toFixed(2)} til ${(baseX + sizeX).toFixed(2)}`);
-  console.log(`Y range: ${baseY.toFixed(2)} til ${(baseY + sizeY).toFixed(2)}`);
-  console.log(`Z range: ${minZ.toFixed(2)} til ${maxZ.toFixed(2)}`);
+  console.log(`✓ ${tempPoints.length} punkter generert`);
+  console.log(`📍 Høydespenn: ${(maxZ - minZ).toFixed(2)}m (${minZ.toFixed(2)} til ${maxZ.toFixed(2)}m)`);
+  
   
   // Opprett posisjon og farge-arrays
   const zRange = maxZ - minZ || 1;
