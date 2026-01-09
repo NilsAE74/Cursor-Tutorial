@@ -438,6 +438,11 @@ async function handleGenerateReport() {
     stats.showLoadingSpinner('Generating PDF report...');
     stats.showDashboardMessage('⏳ Generating PDF report...', 'info');
     
+    // Use positions from stored statistics (original coordinates)
+    const positions = currentStats.positions || null;
+    
+    console.log('Positions for histogram:', positions ? positions.length : 'null');
+    
     const reportData = {
       projectName: reportSettings.projectName,
       datum: reportSettings.datum,
@@ -448,7 +453,8 @@ async function handleGenerateReport() {
       maxZ: currentStats.maxZ,
       areaX: currentStats.areaX,
       areaY: currentStats.areaY,
-      resolution: currentStats.resolution
+      resolution: currentStats.resolution,
+      positions: positions  // Add positions for histogram
     };
     
     await report.generatePDFReport(

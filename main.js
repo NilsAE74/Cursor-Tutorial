@@ -137,14 +137,15 @@ async function loadDefaultCloud() {
     // Update legend with Z-values (TERRAIN ONLY, not logo)
     ui.updateLegend(terrainData.bounds.minZ, terrainData.bounds.maxZ);
 
-    // Save statistics for report (TERRAIN ONLY)
+    // Save statistics for report (TERRAIN ONLY, including positions for histogram)
     ui.updateStats({
       pointCount: terrainData.count,
       minZ: terrainData.bounds.minZ,
       maxZ: terrainData.bounds.maxZ,
       areaX: terrainData.bounds.maxX - terrainData.bounds.minX,
       areaY: terrainData.bounds.maxY - terrainData.bounds.minY,
-      resolution: resolution
+      resolution: resolution,
+      positions: terrainData.positions  // Store original positions for PDF histogram
     });
     
     // Create point cloud and add to scene
@@ -287,14 +288,15 @@ function loadFile(file) {
       // Update legend with Z-values
       ui.updateLegend(bounds.minZ, bounds.maxZ);
 
-      // Save statistics for report
+      // Save statistics for report (including original positions for histogram)
       ui.updateStats({
         pointCount: count,
         minZ: bounds.minZ,
         maxZ: bounds.maxZ,
         areaX: bounds.maxX - bounds.minX,
         areaY: bounds.maxY - bounds.minY,
-        resolution: resolution
+        resolution: resolution,
+        positions: positions  // Store original positions for PDF histogram
       });
 
       // Create point cloud and add to scene (using CENTERED positions for rendering)
