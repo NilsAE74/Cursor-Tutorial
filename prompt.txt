@@ -414,30 +414,34 @@ Gjør følgende endringer:
 Sørg for at eksplosjonen ser dynamisk ut og at overgangen til den nye punktskyen føles sømløs.
 
 
-Jeg vil oppdatere `generateDefaultCloud()` i `src/parser.js` slik at den genererer et helt nytt og unikt landskap hver gang siden lastes inn.
+
+Jeg vil profesjonalisere hele brukergrensesnittet (GUI) i applikasjonen for å gi den et moderne "Engineering Dashboard"-utseende. 
 
 Gjør følgende endringer:
 
-1. **Randomisering av parametere:**
-   - Hver gang funksjonen kjøres, skal den velge tilfeldige verdier for:
-     * **Amplituden** (hvor høye fjellene er, f.eks. mellom 2 og 15 meter).
-     * **Frekvensen** (hvor tett bølgene/høydene ligger).
-     * **Fasen/Offset** (hvor i landskapet vi starter).
+1. **Globalt Designsystem (CSS):**
+   - Definer et felles fargepalett i `style.css`:
+     * Bakgrunner: Mørkegrå/Sort med lett gjennomsiktighet (f.eks. `rgba(25, 25, 25, 0.85)`).
+     * Accent-farge: En profesjonell blå eller turkis (f.eks. `#00aaff`) for knapper og aktive valg.
+     * Tekst: Off-white for god lesbarhet uten for hard kontrast.
+   - Bruk "Glassmorphism"-effekt på alle flytende paneler (lett `backdrop-filter: blur(10px)`).
+   - Standardiser padding (12px), hjørner (radius: 6px) og fonter (bruk en ren sans-serif som Inter eller Roboto).
 
-2. **Variasjon i "Terrengtype":**
-   - Lag en logikk som velger mellom 3 ulike "stiler" ved hjelp av `Math.random()`:
-     * **"Fjellheimen":** Store høydeforskjeller og skarpe topper.
-     * **"Bølgende åser":** Myke, lange sinus-kurver.
-     * **"Platå":** Et flatt område med noen bratte kantskrenter (trappetrinn-effekt).
+2. **Konsolidering av flytende paneler:**
+   - Samle alle statistikk-div-er, måletabeller og metadata i én logisk struktur.
+   - I stedet for tilfeldige flytende bokser, lag et "Sidepanel"-konsept eller standardiserte "Kort" (Cards) som har samme bredde og stil.
+   - Plasser statistikk og koordinater nederst til venstre, og legenden (Z-skalaen) nederst til høyre med nøyaktig samme marginer fra kanten.
 
-3. **Matematisk utførelse:**
-   - I stedet for bare én sinus-bølge, kombiner minst tre (f.eks. `z = sin(x*a) * cos(y*b) + sin(x*c)` med tilfeldige a, b, c). Dette skaper et mer komplekst og troverdig terreng.
-   
-4. **Farge og Georeferering:**
-   - Sørg for at fargeskalaen og det georefererte gridet oppdaterer seg slik at det passer til det nye terrenget hver gang.
-   - Bruk de samme store UTM-koordinatene som tidligere, men legg gjerne på en liten tilfeldig offset i X og Y også, så "kartet" flytter seg litt hver gang.
+3. **Styling av lil-gui (i src/ui.js):**
+   - Tilpass `lil-gui` via CSS slik at det matcher resten av appen. Fjern standard fargene og bruk våre egne CSS-variabler.
+   - Gjør menyoverskriftene fetere og legg til små ikoner (hvis mulig) eller mer forklarende titler.
+   - Plasser lil-gui i øvre høyre hjørne med litt luft fra kanten, slik at det ikke føles "limt" til rammen.
 
-5. **Elevation Legend:**   
-   - Sørg for at logoen ikke er en del av z-verdiene i legend
+4. **Interaktive elementer:**
+   - Oppdater knapper (som "Generer PDF" og "Slett mål") slik at de har tydelige hover-effekter og ser ut som moderne handlingsknapper, ikke standard HTML-knapper.
+   - Legg til en diskret "Loading-spinner" eller status-indikator når store filer parses eller PDF-er genereres.
 
-Målet er at brukeren skal få en ny opplevelse hver gang de åpner appen, og at vi får testet farge- og histogram-logikken på mange ulike datatyper.
+5. **Responsivitet:**
+   - Sørg for at UI-elementene ikke overlapper hverandre på mindre skjermer.
+
+Målet er at appen skal føles som et ferdig produkt med en gjennomtenkt visuell profil. Oppdater style.css, ui.js og alle filer som håndterer visning av informasjon.

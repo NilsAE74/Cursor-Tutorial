@@ -65,7 +65,7 @@ export function initGUI() {
   gui.domElement.style.right = '20px';
 
   // Point cloud settings folder
-  pointFolder = gui.addFolder('Point Cloud Settings');
+  pointFolder = gui.addFolder('⚙️ Point Cloud Settings');
   
   const sizeController = pointFolder.add(settings, 'pointSize', 0.01, 1, 0.01).name('Point Size');
   const colorController = pointFolder.addColor(settings, 'pointColor').name('Point Color');
@@ -73,21 +73,21 @@ export function initGUI() {
   pointFolder.close(); // Closed by default
 
   // Scene settings folder
-  sceneFolder = gui.addFolder('Scene Settings');
+  sceneFolder = gui.addFolder('🎥 Scene Settings');
   const bgColorController = sceneFolder.addColor(settings, 'backgroundColor').name('Background Color');
-  sceneFolder.add(settings, 'showAxes').name('Show Axes').onChange((value) => {
+  sceneFolder.add(settings, 'showAxes').name('Show/Hide Axes').onChange((value) => {
     viewer.setAxesVisible(value);
   });
-  sceneFolder.add(settings, 'showGrid').name('Show Coordinate Grid').onChange((value) => {
+  sceneFolder.add(settings, 'showGrid').name('Show/Hide Coordinate Grid').onChange((value) => {
     grid.setGridVisible(value);
   });
-  sceneFolder.add(settings, 'showLegend').name('Show Height Legend').onChange((value) => {
+  sceneFolder.add(settings, 'showLegend').name('Show/Hide Height Legend').onChange((value) => {
     setLegendVisible(value);
   });
   sceneFolder.close(); // Closed by default
 
   // Controls folder
-  controlsFolder = gui.addFolder('Controls');
+  controlsFolder = gui.addFolder('🔧 Controls');
   controlsFolder.add({ invertZ: () => handleInvertZ() }, 'invertZ').name('🔄 Invert Z-axis');
 
   // Ensure Controls folder stays closed by default
@@ -161,16 +161,6 @@ export function initGUI() {
   setTimeout(ensureControlsClosed, 100);
   setTimeout(ensureControlsClosed, 200);
 
-  // Also ensure main GUI stays closed
-  const ensureMainGUIIsClosed = () => {
-    if (gui) {
-      gui.close();
-    }
-  };
-
-  setTimeout(ensureMainGUIIsClosed, 0);
-  setTimeout(ensureMainGUIIsClosed, 50);
-
   return gui;
 }
 
@@ -178,7 +168,7 @@ export function initGUI() {
  * Sets up Selection Box GUI
  */
 function setupSelectionBoxGUI() {
-  boxFolder = gui.addFolder('Selection Box');
+  boxFolder = gui.addFolder('🎯 Selection Box');
 
   boxControllers.visible = boxFolder.add(boxSettings, 'visible').name('Show Box').onChange((value) => {
     const selBox = selection.getSelectionBox();
