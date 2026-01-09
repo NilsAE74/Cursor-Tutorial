@@ -9,6 +9,7 @@ import * as ui from './src/ui.js';
 import * as selection from './src/selection.js';
 import * as stats from './src/stats.js';
 import * as grid from './src/grid.js';
+import { MeasurementTool } from './src/measurement.js';
 
 // Initialiser Three.js viewer
 const { scene, camera, controls } = viewer.initViewer();
@@ -43,6 +44,35 @@ transformControls.addEventListener('change', () => {
     selection.selectPointsInBox(viewer.getPointCloud(), ui.boxSettings, false);
   }
 });
+
+// Initialiser Measurement Tool
+const measurementTool = new MeasurementTool(
+  viewer.getScene(),
+  viewer.getCamera(),
+  viewer.getRendererElement(),
+  { x: 0, y: 0, z: 0 }
+);
+
+// Sett referanser til measurement tool
+viewer.setMeasurementTool(measurementTool);
+ui.setMeasurementTool(measurementTool);
+
+// Wrapper for completeMeasurement som også oppdaterer dashboard
+const originalCompleteMeasurement = measurementTool.completeMeasurement.bind(measurementTool);
+measurementTool.completeMeasurement = function(startPoint, endPoint) {
+  const measurement = originalCompleteMeasurement(startPoint, endPoint);
+  if (measurement) {
+    // Log measurement data to console
+    console.log('📏 Måling fullført:');
+    console.log(`  Start: (${measurement.startOriginal.x.toFixed(2)}, ${measurement.startOriginal.y.toFixed(2)}, ${measurement.startOriginal.z.toFixed(2)})`);
+    console.log(`  Slutt: (${measurement.endOriginal.x.toFixed(2)}, ${measurement.endOriginal.y.toFixed(2)}, ${measurement.endOriginal.z.toFixed(2)})`);
+    console.log(`  ΔX: ${measurement.deltaX.toFixed(2)} m, ΔY: ${measurement.deltaY.toFixed(2)} m, ΔZ: ${measurement.deltaZ.toFixed(2)} m`);
+    console.log(`  Total avstand: ${measurement.distance3D.toFixed(2)} m`);
+    
+    stats.showDashboardMessage(`✓ Måling fullført: ${measurement.distance3D.toFixed(2)} m`, 'info');
+  }
+  return measurement;
+};
 
 // Start animasjons-loop
 viewer.animate();
@@ -87,6 +117,10 @@ async function loadDefaultCloud() {
     // Lagre offset
     selection.setCoordinateOffset(offset.x, offset.y, offset.z);
     viewer.setCoordinateOffset(offset.x, offset.y, offset.z);
+    measurementTool.setCoordinateOffset(offset);
+    
+    console.log('📏 Måleverktøy klar for default punktsky');
+    console.log(`   Koordinat-offset: (${offset.x.toFixed(2)}, ${offset.y.toFixed(2)}, ${offset.z.toFixed(2)})`);
     
     // Oppdater dashboard med statistikk (KUN TERRENG, ikke logo)
     const resolution = stats.updateDashboard(terrainData.count, terrainData.bounds, terrainData.positions, 'Default Terreng');
@@ -155,7 +189,13 @@ async function loadDefaultCloud() {
     viewer.setIsDefaultCloud(true, combinedVelocities);
     
     console.log('Punktsky med logo lastet!');
+    console.log('📏 Tips: Aktiver måleverktøyet i GUI for å måle avstander!');
     stats.showDashboardMessage(`✓ Terreng lastet med ${terrainData.count.toLocaleString('nb-NO')} punkter (+ Logo: ${logoData.count.toLocaleString('nb-NO')} punkter)`, 'info');
+    
+    // Vis kort info om måleverktøy
+    setTimeout(() => {
+      stats.showDashboardMessage('💡 Måleverktøyet er klart! Aktiver det i GUI (📏 Måleverktøy)', 'info');
+    }, 3000);
     
   } catch (error) {
     console.error('Feil ved lasting av default punktsky:', error);
@@ -210,6 +250,12 @@ function loadFile(file) {
       
       // Lagre offset i viewer-modulen for inversjon
       viewer.setCoordinateOffset(offset.x, offset.y, offset.z);
+      
+      // Lagre offset i measurement tool
+      measurementTool.setCoordinateOffset(offset);
+      
+      console.log('📏 Måleverktøy oppdatert for ny punktsky');
+      console.log(`   Koordinat-offset: (${offset.x.toFixed(2)}, ${offset.y.toFixed(2)}, ${offset.z.toFixed(2)})`);
       
       // Oppdater dashboard med statistikk (bruker ORIGINALE posisjoner for histogram)
       const resolution = stats.updateDashboard(count, bounds, positions, file.name);

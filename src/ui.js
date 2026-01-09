@@ -6,7 +6,7 @@ import * as report from './report.js';
 import * as grid from './grid.js';
 
 let gui;
-let pointFolder, sceneFolder, boxFolder;
+let pointFolder, sceneFolder, boxFolder, measurementFolder;
 let boxControllers = {};
 
 // Settings objekter
@@ -44,6 +44,13 @@ export const boxSettings = {
   hideOutside: true,
   selectPoints: null,  // Vil bli satt senere
   saveSelected: null   // Vil bli satt senere
+};
+
+// Måleverktøy innstillinger
+export const measurementSettings = {
+  active: false,
+  clearAll: null,  // Vil bli satt senere
+  measurementTool: null  // Referanse til MeasurementTool-instans
 };
 
 /**
@@ -87,6 +94,9 @@ export function initGUI() {
 
   // Selection Box folder
   setupSelectionBoxGUI();
+  
+  // Måleverktøy folder
+  setupMeasurementGUI();
 
   // Event handlers
   bgColorController.onChange((value) => {
@@ -317,6 +327,37 @@ function handleInvertZ() {
 }
 
 /**
+ * Setter opp Måleverktøy GUI
+ */
+function setupMeasurementGUI() {
+  measurementFolder = gui.addFolder('📏 Måleverktøy');
+  
+  // Aktiver måling checkbox
+  measurementFolder.add(measurementSettings, 'active').name('Aktiver måling').onChange((value) => {
+    if (measurementSettings.measurementTool) {
+      measurementSettings.measurementTool.setActive(value);
+      
+      // Measurement box vises automatisk når en måling er fullført
+      if (!value) {
+        // Skjul measurement box når verktøyet deaktiveres (valgfritt)
+        // stats.showMeasurementSection(false);
+      }
+    }
+  });
+  
+  // Slett alle mål knapp
+  measurementSettings.clearAll = () => {
+    if (measurementSettings.measurementTool) {
+      measurementSettings.measurementTool.clearAllMeasurements();
+      stats.showDashboardMessage('✓ Alle målinger slettet', 'info');
+    }
+  };
+  
+  measurementFolder.add(measurementSettings, 'clearAll').name('🗑️ Slett alle mål');
+  measurementFolder.close();
+}
+
+/**
  * Setter opp Rapport & Lokasjon GUI
  */
 function setupReportGUI() {
@@ -424,4 +465,11 @@ export function setLegendVisible(visible) {
   if (legend) {
     legend.style.display = visible ? 'block' : 'none';
   }
+}
+
+/**
+ * Setter referanse til measurement tool
+ */
+export function setMeasurementTool(tool) {
+  measurementSettings.measurementTool = tool;
 }

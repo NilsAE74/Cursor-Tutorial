@@ -8,6 +8,7 @@ let pointCloud = null;
 let coordinateOffset = { x: 0, y: 0, z: 0 }; // Lagrer offset fra sentrering
 let isDefaultCloud = false; // Flagg for å vite om det er default-skyen
 let explosionVelocities = null; // Lagrer velocity-data for eksplosjon
+let measurementTool = null; // Referanse til measurement tool for rendering
 
 /**
  * Initialiserer Three.js viewer
@@ -69,6 +70,11 @@ export function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
+  
+  // Render measurement labels hvis measurement tool er aktiv
+  if (measurementTool) {
+    measurementTool.render();
+  }
 }
 
 /**
@@ -466,6 +472,20 @@ export function getControls() {
  */
 export function getScene() {
   return scene;
+}
+
+/**
+ * Setter referanse til measurement tool
+ */
+export function setMeasurementTool(tool) {
+  measurementTool = tool;
+}
+
+/**
+ * Henter measurement tool
+ */
+export function getMeasurementTool() {
+  return measurementTool;
 }
 
 /**
