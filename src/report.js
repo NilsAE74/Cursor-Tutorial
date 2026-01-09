@@ -82,8 +82,8 @@ function createCoverPage(pdf, reportData) {
   });
   
   pdf.text(`Generert: ${date}`, MARGIN + 10, yPos + 28);
-  pdf.text(`Koordinatsystem: ${reportData.datum || 'ED50'}`, MARGIN + 10, yPos + 38);
-  pdf.text(`Projeksjon: ${reportData.projection || 'UTM 32N'}`, MARGIN + 10, yPos + 48);
+  pdf.text(`Koordinatsystem: ${reportData.datum || ''}`, MARGIN + 10, yPos + 38);
+  pdf.text(`Projeksjon: ${reportData.projection || ''}`, MARGIN + 10, yPos + 48);
 }
 
 /**
@@ -115,7 +115,7 @@ async function createMapPage(pdf, reportData) {
   yPos = drawSectionHeader(pdf, 'Topp-visning (Ortografisk)', yPos);
   
   try {
-    const mapResult = await viewer.generateMapImage(2048);
+    const mapResult = await viewer.generateMapImage(2048, reportData.resolution);
     
     if (mapResult && mapResult.imageDataUrl) {
       const axisSpace = 12;
@@ -167,6 +167,7 @@ async function createMapPage(pdf, reportData) {
   yPos = drawSectionHeader(pdf, 'Statistikk', yPos);
   const statsData = [
     ['Antall punkter', reportData.pointCount.toLocaleString('nb-NO')],
+    ['Punktoppløsning', `${reportData.resolution.toFixed(3)} m`],
     ['Høydeområde (Z)', `${reportData.minZ.toFixed(2)} til ${reportData.maxZ.toFixed(2)} m`],
     ['Høydespenn', `${(reportData.maxZ - reportData.minZ).toFixed(2)} m`],
     ['Utstrekning X', `${reportData.areaX.toFixed(2)} m`],

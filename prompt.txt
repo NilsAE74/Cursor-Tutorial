@@ -330,3 +330,39 @@ Siden jeg ikke har en bildefil, vil jeg at du skal gjøre følgende:
    - Sørg også for at `<title>` i HTML-filen er oppdatert til noe passende, f.eks. "3D Point Cloud Viewer".
 
 Fiks dette slik at jeg ser logoen i fanen neste gang jeg oppdaterer siden.
+
+
+Jeg vil legge til en stående (vertikal) legend i 3D-visningen som viser sammenhengen mellom farger og Z-verdier (dybde/høyde).
+
+Gjør følgende endringer:
+
+1. **HTML/CSS:**
+   - Opprett et nytt `<div>`-element med id "height-legend" som ligger over 3D-canvaset.
+   - Plasser det i **nederst i høyre hjørne** med ca. 20px avstand fra kantene.
+   - Legenden skal være vertikal (høy og smal).
+   - Bruk en mørk, semitransparent bakgrunn, hvit tekst og tynne rammer som matcher dashboardet.
+   - Selve fargeskalaen skal vises som en vertikal søyle med en farge-gradient (f.eks. fra blått i bunn til rødt i toppen).
+
+2. **Logikk (i src/ui.js eller src/stats.js):**
+   - Lag en funksjon `updateLegend(minZ, maxZ)` som oppdaterer tallene i legenden.
+   - Toppen av legenden skal vise `maxZ` (eller `colorMaxZ` hvis fargetuning er aktiv).
+   - Bunnen av legenden skal vise `minZ` (eller `colorMinZ`).
+   - Legg gjerne til et par mellomverdier i midten for bedre lesbarhet.
+
+3. **Samhandling:**
+   - Legenden skal oppdateres automatisk hver gang en ny fil lastes inn.
+   - Legg til en sjekkboks i GUI-en under "Visning" for å slå legenden av og på.
+
+Sørg for at designet er rent og profesjonelt, og at det ikke overlapper med andre GUI-elementer.
+
+
+Jeg vil legge til en funksjon som genererer en default punktsky hvis brukeren ikke har lastet opp en egen fil.
+
+Gjør følgende:
+1. **Logikk:** Lag en funksjon `generateDefaultCloud()` i `src/parser.js`.
+2. **Geometri:** La den generere et syntetisk terreng (100x100 meter) med ca. 10 000 punkter. Bruk en matematisk formel (f.eks. en støy-funksjon eller sinus-bølger) for å gi terrenget høydeforskjeller mellom 0 og 10 meter.
+3. **Koordinater:** Gi punktene realistiske UTM-koordinater (f.eks. i 500.000 / 6.000.000 området) slik at jeg kan teste "Smart Grid"-funksjonaliteten min.
+4. **Oppstart:** Når appen starter (main.js), skal denne default-skyen vises med en gang, helt til brukeren velger å importere en egen XYZ-fil.
+5. **Dashboard:** Sørg for at histogrammet og statistikk-dashboardet også viser data for denne default-skyen ved oppstart.
+
+Bruk gjerne farge-gradienten vi allerede har satt opp, slik at det ser bra ut med en gang.

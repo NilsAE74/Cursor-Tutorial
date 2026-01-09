@@ -47,6 +47,95 @@ transformControls.addEventListener('change', () => {
 // Start animasjons-loop
 viewer.animate();
 
+// Last inn default punktsky ved oppstart
+function loadDefaultCloud() {
+  console.log('=== LASTER DEFAULT PUNKTSKY ===');
+  
+  try {
+    // Generer default punktsky
+    const { positions, colors, count, bounds } = parser.generateDefaultCloud();
+    
+    // Sentrer posisjonene rundt origo
+    const { centeredPositions, offset } = parser.centerPositions(positions, bounds);
+    
+    // Lagre offset
+    selection.setCoordinateOffset(offset.x, offset.y, offset.z);
+    viewer.setCoordinateOffset(offset.x, offset.y, offset.z);
+    
+    // Oppdater dashboard med statistikk
+    const resolution = stats.updateDashboard(count, bounds, positions, 'Default Terreng');
+    
+    // Oppdater legend med Z-verdier
+    ui.updateLegend(bounds.minZ, bounds.maxZ);
+    
+    // Lagre statistikk for rapport
+    ui.updateStats({
+      pointCount: count,
+      minZ: bounds.minZ,
+      maxZ: bounds.maxZ,
+      areaX: bounds.maxX - bounds.minX,
+      areaY: bounds.maxY - bounds.minY,
+      resolution: resolution
+    });
+    
+    // Opprett punktsky og legg til i scenen
+    const pointCloud = viewer.addPointCloud(
+      centeredPositions,
+      colors,
+      ui.settings.pointSize,
+      ui.settings.useHeightColor,
+      ui.settings.pointColor
+    );
+    
+    // Beregn bounding box og sentrer kamera
+    const geometry = pointCloud.geometry;
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+    
+    const { center, size, maxDim } = viewer.centerCameraOnBounds(
+      geometry.boundingBox,
+      geometry.boundingSphere
+    );
+    
+    // Respekter GUI-innstillingene for aksekors
+    viewer.setAxesVisible(ui.settings.showAxes);
+    
+    // Opprett koordinatgrid med originale koordinater (men hold det skjult som standard)
+    grid.createSurveyGrid(geometry.boundingBox, offset, viewer.getScene());
+    grid.setGridVisible(ui.settings.showGrid);
+    
+    // Åpne punkt-innstillinger folder
+    ui.openPointFolder();
+    
+    // Oppdater GUI ranges basert på faktiske data
+    ui.updateGUIRanges(bounds);
+    
+    // Skjul selection box som standard
+    selectionBox.visible = false;
+    transformControls.visible = false;
+    ui.boxSettings.visible = false;
+    
+    // Posisjonér selection box
+    selection.positionSelectionBox(center, size, ui.boxSettings);
+    
+    // Oppdater GUI
+    ui.updateDisplay();
+    
+    // Nullstill originalColors
+    selection.resetOriginalColors();
+    
+    console.log('Default punktsky lastet!');
+    stats.showDashboardMessage(`✓ Default terreng lastet! ${count.toLocaleString('nb-NO')} punkter visualisert.`, 'info');
+    
+  } catch (error) {
+    console.error('Feil ved lasting av default punktsky:', error);
+    stats.showDashboardMessage(`Feil ved lasting av default punktsky: ${error.message}`, 'error');
+  }
+}
+
+// Last default punktsky ved oppstart
+loadDefaultCloud();
+
 // Håndter fil-opplasting
 const fileInput = document.getElementById('fileInput');
 
@@ -91,7 +180,7 @@ function loadFile(file) {
       viewer.setCoordinateOffset(offset.x, offset.y, offset.z);
       
       // Oppdater dashboard med statistikk (bruker ORIGINALE posisjoner for histogram)
-      stats.updateDashboard(count, bounds, positions, file.name);
+      const resolution = stats.updateDashboard(count, bounds, positions, file.name);
       
       // Oppdater legend med Z-verdier
       ui.updateLegend(bounds.minZ, bounds.maxZ);
@@ -102,7 +191,8 @@ function loadFile(file) {
         minZ: bounds.minZ,
         maxZ: bounds.maxZ,
         areaX: bounds.maxX - bounds.minX,
-        areaY: bounds.maxY - bounds.minY
+        areaY: bounds.maxY - bounds.minY,
+        resolution: resolution
       });
       
       // Opprett punktsky og legg til i scenen (bruker SENTRERTE posisjoner for rendering)

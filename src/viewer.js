@@ -235,7 +235,7 @@ export function getRenderer() {
  * Genererer et kart-bilde (topp-visning) for PDF-rapport
  * Bruker ortografisk kamera for flat projeksjon uten perspektivforvrengning
  */
-export async function generateMapImage(resolution = 2048) {
+export async function generateMapImage(resolution = 2048, pointResolution = null) {
   return new Promise((resolve, reject) => {
     try {
       if (!pointCloud) {
@@ -261,7 +261,12 @@ export async function generateMapImage(resolution = 2048) {
       if (axesHelper) axesHelper.visible = false;
 
       // VISIBILITY BOOST: Øk punktstørrelse betydelig for tydeligere punkter
-      pointCloud.material.size = originalPointSize * 4;
+      //pointCloud.material.size = originalPointSize * 10;
+      if (pointResolution !== null) {
+        pointCloud.material.size = pointResolution * 10;
+      } else {
+        pointCloud.material.size = originalPointSize * 10;  // Fallback
+      }
       
       // Full opasitet for kraftige, solide farger
       pointCloud.material.opacity = 1.0;

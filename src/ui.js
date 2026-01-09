@@ -352,7 +352,8 @@ async function handleGenerateReport() {
       minZ: currentStats.minZ,
       maxZ: currentStats.maxZ,
       areaX: currentStats.areaX,
-      areaY: currentStats.areaY
+      areaY: currentStats.areaY,
+      resolution: currentStats.resolution
     };
     
     await report.generatePDFReport(

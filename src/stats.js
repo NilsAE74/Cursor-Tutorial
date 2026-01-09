@@ -79,6 +79,9 @@ export function updateDashboard(pointCount, bounds, positions, fileName = '') {
   
   dashboardElement.innerHTML = html;
   dashboardElement.style.display = 'block';
+
+  // Returner resolution for bruk i rapport
+  return resolution;
 }
 
 /**
