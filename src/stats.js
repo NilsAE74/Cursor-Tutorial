@@ -2,6 +2,8 @@
  * Statistikk og dashboard-funksjonalitet
  */
 
+import * as THREE from 'three';
+
 let dashboardElement;
 let currentFileName = '';
 let currentMetadata = {
@@ -245,6 +247,27 @@ function calculatePointResolution(positions) {
 }
 
 /**
+ * Calculates color based on Z-value using the same elevation gradient as the point cloud
+ */
+function getColorForZ(z, minZ, maxZ) {
+  const zRange = maxZ - minZ || 1;
+  const normalizedZ = (z - minZ) / zRange;
+  const color = new THREE.Color();
+  color.setHSL(0.6 - normalizedZ * 0.6, 1.0, 0.5); // Blue (0.6) to red (0.0)
+  return color;
+}
+
+/**
+ * Converts THREE.Color to CSS rgb string
+ */
+function colorToCSS(color) {
+  const r = Math.round(color.r * 255);
+  const g = Math.round(color.g * 255);
+  const b = Math.round(color.b * 255);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+/**
  * Calculates histogram for Z-values
  */
 function calculateZHistogram(positions, minZ, maxZ, numBins) {
@@ -270,7 +293,7 @@ function calculateZHistogram(positions, minZ, maxZ, numBins) {
 }
 
 /**
- * Creates HTML for histogram bars
+ * Creates HTML for histogram bars with elevation-based colors
  */
 function createHistogramBars(histogram, minZ, maxZ) {
   const maxCount = Math.max(...histogram);
@@ -284,10 +307,15 @@ function createHistogramBars(histogram, minZ, maxZ) {
     const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
     const binStart = minZ + (i * binSize);
     const binEnd = binStart + binSize;
+    
+    // Calculate average Z-value for this bin and get corresponding color
+    const avgZ = (binStart + binEnd) / 2;
+    const color = getColorForZ(avgZ, minZ, maxZ);
+    const cssColor = colorToCSS(color);
 
     html += `
       <div class="histogram-bar-container" title="${count.toLocaleString('nb-NO')} points (${binStart.toFixed(2)} - ${binEnd.toFixed(2)} m)">
-        <div class="histogram-bar" style="height: ${percentage}%">
+        <div class="histogram-bar" style="height: ${percentage}%; background-color: ${cssColor};">
           <span class="bar-count">${count > 0 ? formatCount(count) : ''}</span>
         </div>
         <span class="bar-label">${binStart.toFixed(1)}</span>

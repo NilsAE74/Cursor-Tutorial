@@ -565,6 +565,48 @@ export function animateExplosion(callback) {
 }
 
 /**
+ * Recalculates point colors based on current Z-values
+ * Used after Z-axis inversion to update colors correctly
+ */
+function recalculateColorsFromZ() {
+  if (!pointCloud) return;
+
+  const positions = pointCloud.geometry.attributes.position.array;
+  const colors = pointCloud.geometry.attributes.color.array;
+
+  // First pass: find min/max Z
+  let minZ = Infinity;
+  let maxZ = -Infinity;
+  
+  for (let i = 0; i < positions.length; i += 3) {
+    const z = positions[i + 2];
+    minZ = Math.min(minZ, z);
+    maxZ = Math.max(maxZ, z);
+  }
+
+  const zRange = maxZ - minZ || 1; // Avoid division by zero
+
+  // Second pass: recalculate colors based on normalized Z
+  for (let i = 0; i < positions.length; i += 3) {
+    const z = positions[i + 2];
+    const normalizedZ = (z - minZ) / zRange;
+    
+    // Use same color gradient as in parser: blue (0.6) to red (0.0)
+    const color = new THREE.Color();
+    color.setHSL(0.6 - normalizedZ * 0.6, 1.0, 0.5);
+    
+    const colorIndex = i; // Color array has same indices as position array
+    colors[colorIndex] = color.r;
+    colors[colorIndex + 1] = color.g;
+    colors[colorIndex + 2] = color.b;
+  }
+
+  // Mark colors as updated
+  pointCloud.geometry.attributes.color.needsUpdate = true;
+  console.log('Colors recalculated based on inverted Z-values');
+}
+
+/**
  * Inverterer Z-aksen for punktskyen
  * Returnerer nye bounds for oppdatering av andre komponenter
  */
@@ -587,6 +629,9 @@ export function invertZAxis() {
   
   // Marker at posisjoner er oppdatert
   pointCloud.geometry.attributes.position.needsUpdate = true;
+  
+  // Recalculate colors based on new Z-values
+  recalculateColorsFromZ();
   
   // Beregn nye bounds (sentrerte)
   pointCloud.geometry.computeBoundingBox();
